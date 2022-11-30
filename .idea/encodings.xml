@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/.idea/.gitignore" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/Readme.md" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dependency-injection/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dependency-injection/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/hello-spring/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/hello-spring/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/hello-spring/src/test/java/MyTest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-ioc/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-ioc/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-ioc/src/test/java/MyTest.java" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

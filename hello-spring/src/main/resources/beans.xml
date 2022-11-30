@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 使用Spring来创建对象，在Spring这些都叫Bean -->
+
+    <!-- bean = Object  -->
+
+    <!-- Hello hello = new Hello(); -->
+
+    <!-- id = 变量名 -->
+    <!-- class = new 的变量 -->
+    <!-- property 相当于给对象属性设置值 -->
+    <!-- 这个过程体现了控制反转IoC -->
+    <!-- 容器指beans -->
+    <!-- 所谓的IoC，就是由Spring来创建管理 -->
+
+    <!-- <bean id="hello" class="com.iris.po.Hello"> -->
+    <!--     &lt;!&ndash; 有参数构造器，下标赋值 &ndash;&gt; -->
+    <!--     <constructor-arg index="0" value="SpringLearning"/> -->
+    <!-- </bean> -->
+
+    <!-- <bean id="hello" class="com.iris.po.Hello"> -->
+    <!--     &lt;!&ndash; 第二种方式 ：通过类型创建 &ndash;&gt; -->
+    <!--     <constructor-arg type="java.lang.String" value="lijiaheng"/> -->
+    <!-- </bean> -->
+
+    <bean id="hello" class="com.iris.po.Hello">
+        <constructor-arg name="str" value="Spring"/>
+    </bean>
+
+    <bean id="StringS" class="com.iris.po.Hello">
+        <constructor-arg name="str" value=""/>
+    </bean>
+</beans>
