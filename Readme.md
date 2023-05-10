@@ -1,26 +1,22 @@
-# ���Ʒ�ת˼��IoC
+# 控制反转思想IoC
 
-��֮ǰ��ҵ���У��û���������ܻ�Ӱ��ҵ����룬������Ҫ�����û��������޸�Դ���룬������������ʮ���Ӵ��޸�һ�εĳɱ�����ʮ�ְ���
+在之前的业务中，用户的需求可能会影响业务代码，我们需要根据用户的需求修改源代码，如果程序代码量十分庞大，修改一次的成本代价十分昂贵。
 
-��ôʹ��һ��Set�ӿ�ʵ�֣��Ѿ������˸����Եı仯��
-```java 
+我么使用一个Set接口实现，已经发生了革命性的变化。
+
+```java
     private UserDao userDao;
-    // ����set���ƶ�̬ʵ��ֵ��ע��
+    // 利用set控制动态实现值的注入
     @Override
     public void setUserDao(UserDao userDao){
         this.userDao = userDao;
     }
 ```
 
-֮ǰ���������������������󣬿���Ȩ�ڳ���Ա���ϡ�
-ʹ��setע��֮�󣬳����پ��������ԣ����Ǳ�ɱ����Ľ��ն���
+之前，，程序是主动创建对象，控制权在程序员手上。 使用set注入之后，程序不再具有主动性，而是变成被动的接收对象。
 
-����˼��ӱ����Ͻ�������⣬����Ա���ٹ�������Ĵ���new��ϵͳ����Դ�󽵵͡����Ը���רע��ҵ���ʵ���ϡ�
-��ν�Ŀ��Ʒ�ת����ֻ�����������ķ�ʽ��ת�ˡ�
-����IOC��ԭ��prototype��������������IOC��
+这种思想从本质上解决了问题，程序员不再管理对象的创建new，系统耦合性大大降低。可以更加专注在业务的实现上。 所谓的控制反转，是只获得依赖对象的方式反转了。 这是IOC的原型prototype，但不是完整的IOC。
 
-���Ʒ�ת����һ��ͨ��������XML��ע�⣩��ͨ��������ȥ�������ȡ�ض�����ķ��ɡ���Spring��ʵ�ֿ��Ʒ�ת����IoC��������ʵ�ַ���������ע�루Dependency Injection��DI����
-DI Ҳ��IoC��һ����ʵ�ַ�����
+控制反转，是一种通过描述（XML或注解）并通过第三方去生产或获取特定对象的放松。在Spring中实现控制反转的是IoC容器，其实现方法是依赖注入（Dependency Injection，DI）。 DI 也是IoC的一种是实现方法。
 
-IoC����
-
+IoC容器
