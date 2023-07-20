@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="address" class="com.iris.po.Address">
+        <property name="adress" value="长沙" />
+    </bean>
+    <bean id="student" class="com.iris.po.Student">
+        <!-- 第一种：直接注入基本类型值 -->
+        <property name="name" value="iris"/>
+        <!-- 第二种：bean注入，引用注入 -->
+        <property name="address" ref="address"/>
+        <!-- 第三种：数组Array注入 -->
+        <property name="books">
+            <array>
+                <value>红楼梦</value>
+                <value>西游记</value>
+                <value>水浒传</value>
+                <value>三国演义</value>
+            </array>
+        </property>
+        <!-- 第四种：列表List注入 -->
+        <property name="hobbys">
+            <list>
+                <value>唱歌</value>
+                <value>跳舞</value>
+                <value>rap</value>
+                <value>篮球</value>
+            </list>
+        </property>
+        <!-- 第五种：map注入 -->
+        <property name="cards">
+            <map>
+                <entry key="身份证" value="4104021568168"/>
+                <entry key="银行卡" value="4152548168"/>
+                <entry key="学生证" value="6816854"/>
+                <entry key="VISA卡" value="410458168"/>
+            </map>
+        </property>
+        <!-- 第六种：Set注入 -->
+        <property name="games">
+            <set>
+                <value>LOL</value>
+                <value>Dota2</value>
+                <value>war thunder</value>
+            </set>
+        </property>
+        <!-- 第七种：null注入 -->
+        <property name="wife">
+                <null/>
+        </property>
+        <!-- 第八种：properties注入 -->
+        <property name="info">
+            <props>
+                <prop key="学号">20180523</prop>
+                <prop key="姓名">iris</prop>
+                <prop key="性别">男</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

@@ -10,7 +10,9 @@ public class MyTest {
         System.out.println("进入Spring上下文");
         // 我们的对象在Spring中管理，直接获取就可以了
         Hello hello = (Hello) context.getBean("hello");
+        Hello hello1 = (Hello) context.getBean("StringS");
         System.out.println("进入bean");
         System.out.println(hello);
+        System.out.println(hello1);
     }
 }

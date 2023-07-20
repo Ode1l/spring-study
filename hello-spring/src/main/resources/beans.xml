@@ -18,12 +18,12 @@
     <!-- 所谓的IoC，就是由Spring来创建管理 -->
 
     <!-- <bean id="hello" class="com.iris.po.Hello"> -->
-    <!--     &lt;!&ndash; 有参数构造器，下标赋值 &ndash;&gt; -->
+    <!--      有参数构造器，下标赋值 -->
     <!--     <constructor-arg index="0" value="SpringLearning"/> -->
     <!-- </bean> -->
 
     <!-- <bean id="hello" class="com.iris.po.Hello"> -->
-    <!--     &lt;!&ndash; 第二种方式 ：通过类型创建 &ndash;&gt; -->
+    <!--      第二种方式 ：通过类型创建  -->
     <!--     <constructor-arg type="java.lang.String" value="lijiaheng"/> -->
     <!-- </bean> -->
 

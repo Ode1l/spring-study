@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!-- p命名空间注入：可以直接在bean中注入属性值，p代表properties -->
+    <bean id="user" class="com.iris.po.User" p:age="18" p:name="iris" scope="singleton" />
+    <!-- c命名空间：可以直接在bean中进行构造器注入，c代表constructor-arg -->
+    <bean id="userc" class="com.iris.po.User" c:age="28" c:name="Ode1l" scope="prototype" />
+    <!-- scope作用域 可切换bean为单例模式 原型模式 session websocket等多种模式 -->
+</beans>

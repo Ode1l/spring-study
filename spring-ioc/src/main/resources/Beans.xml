@@ -21,7 +21,7 @@
     <!-- 容器指beans -->
     <!-- 所谓的IoC，就是由Spring来创建 管理 装配 -->
     <bean id="UserServiceImpl" class="com.iris.service.UserServiceImpl" name="nowDaoImpl">
-        <!-- ref: 引用Spring容器中闯进啊好的对象 -->
+        <!-- ref: 引用Spring容器中创建好的对象 -->
         <!-- value: 具体的值，基本数据类型 -->
         <property name="userDao" ref="mysqlImpl"/>
     </bean>
