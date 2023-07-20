@@ -12,6 +12,7 @@
         <module>spring-ioc</module>
         <module>hello-spring</module>
         <module>dependency-injection</module>
+        <module>autowired</module>
     </modules>
 
     <properties>
@@ -25,7 +26,15 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>6.0.8</version>
+            <version>5.2.25.RELEASE</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>
