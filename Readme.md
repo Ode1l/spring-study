@@ -148,3 +148,113 @@ spring有三种装配方式。
 1. xml记录的配置。
 2. 使用java代码配置。
 3. 隐式自动装配。（重要常用）
+
+### 自动装配方式
+1. byName 
+```xml
+<beans>
+    <bean id="dog" class="com.iris.po.Dog"/>
+    <bean id="cat" class="com.iris.po.Cat"/>
+    <bean id="human" class="com.iris.po.Human" autowire="byName">
+        <property name="name" value="iris"/>
+    </bean>
+</beans>
+```
+
+byName: 通过bean的id和setCat中set后的名字一一对应绑定
+
+2. byType
+
+```xml
+<beans>
+    <bean class="com.iris.po.Dog"/>
+    <bean class="com.iris.po.Cat"/>
+    <bean id="human" class="com.iris.po.Human" autowire="byType">
+        <property name="name" value="iris"/>
+    </bean>
+</beans>
+```
+
+byType: 通过bean的类型(class)和setXxx中类型(class)一一对应绑定。
+但是存在缺陷，因为一个类型可能出现多个bean，此时无法一一对应。
+优点是byType甚至可以不用写bean的id。
+
+### 使用注解自动装配
+
+JDK1.5  Spring2.5以后支持注解
+
+The introduction of annotation-based configuration raised the question of whether this approach is “better” than XML. 
+
+使用注解需要: 
+1. 导入约束
+
+导入context约束
+```text
+    xmlns:context="http://www.springframework.org/schema/context"
+```
+
+2. 配置注解支持 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+</beans>
+```
+
+#### @AutoWired
+
+直接在属性上使用，也可以在set方法上使用。使用AutoWired后，可以省略set方法。注解其实是使用反射实现byname方法
+
+@AutoWired(required = false) 使用required = false可使属性对象为空值且不报错。
+
+@Qualifier(value = "dog11") 如果出现名称重复情况，可使用此标签重新byname定位。
+
+set方法中的字段可以使用@Nullable注解，使方法值可以为null。不会报错。
+public void setCat(@Nullable Cat cat)
+
+#### @Resource
+
+java自带了@Resource标签，作用与Autowired相同
+@Resource(name = "dog")
+
+#### 区别
+
+1. Autowired 默认byType。 resource默认byName，找不到通过byType，如果还找不到，报错。
+
+## 注解完成所有功能
+
+### @Component
+
+放在类上，使该类被spring直接注册成bean，name为小写。
+
+### @Value
+
+放在属性上或者set方法上，直接赋值 @Value("Ode1l")
+
+### @Component衍生注解
+
+dao --@Repository
+service --@Service
+controller --@Controller
+po --@Component
+
+MVC不同层级对应不同注解，但是实质上都是@Component衍生出来的。
+
+### @Scope(prototype)
+
+放在类上，用来控制作用域，可用单例，实例等。
+
+##XML对比注解
+
+XML功能更全面，维护相对复杂。注解更便捷，但功能简单。
+
+一般结合使用方式: XML用来管理bean。注解完成属性注入。

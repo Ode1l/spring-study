@@ -3,6 +3,8 @@
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$/.idea/.gitignore" charset="GBK" />
     <file url="file://$PROJECT_DIR$/Readme.md" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/annotation/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/annotation/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/autowired/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/autowired/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/dependency-injection/src/main/java" charset="UTF-8" />

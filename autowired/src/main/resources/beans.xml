@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+    <!-- 开启注解支持 -->
+    <context:annotation-config/>
+
+    <bean id="dog" class="com.iris.po.Dog"/>
+    <bean id="cat" class="com.iris.po.Cat"/>
+    <bean id="human" class="com.iris.po.Human"/>
+
+
+
+    <!-- byName: 通过bean的id和setCat中set后的名字一一对应绑定 -->
+
+    <!--
+    <bean id="human" class="com.iris.po.Human" autowire="byName">
+        <property name="name" value="iris"/>
+    </bean>
+    -->
+
+    <!-- byType: 通过bean的类型和setCat中类型一一对应绑定。
+    但是存在缺陷，因为一个类型可能出现多个bean，此时无法一一对应。
+    优点是byType甚至可以不用写bean的id。
+    eg:
+    <bean class="com.iris.po.Dog"/>
+    <bean class="com.iris.po.Cat"/>
+    <bean id="human" class="com.iris.po.Human" autowire="byType">
+        <property name="name" value="iris"/>
+    </bean>
+
+    -->
+
+
+</beans>

@@ -13,6 +13,8 @@
         <module>hello-spring</module>
         <module>dependency-injection</module>
         <module>autowired</module>
+        <module>annotation-based</module>
+        <module>java-based</module>
     </modules>
 
     <properties>
