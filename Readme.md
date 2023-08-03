@@ -258,3 +258,282 @@ MVC不同层级对应不同注解，但是实质上都是@Component衍生出来�
 XML功能更全面，维护相对复杂。注解更便捷，但功能简单。
 
 一般结合使用方式: XML用来管理bean。注解完成属性注入。
+
+## 完全使用java方式配置类
+
+使用java方式配置，需要创建一个config类，一般创建config包，包下创建SpringConfig类，
+
+```java
+@Configuration
+public class SpringConfig {
+    @Bean
+    public User getUser(){
+        return new User();
+    }
+}
+```
+
+类用@Configuration标记为SpringConfig。类中通过@Bean return new User();该方法触发，效果等同于在XML中注册。
+
+同时也可以使用@ComponentScan("com.iris")包扫描器，记得在在需要注册的类上@Component注册。
+
+```java
+@Configuration
+@ComponentScan("com.iris")
+public class SpringConfig {
+}
+
+@Component
+public class User {
+    @Value("Ode1l")
+    public String Name;
+}
+```
+
+java配置方式与注解配合使用是目前最常见的方式。
+
+## 代理模式
+
+SpringAOP(面向切片)底层"实现"，就是代理模式。
+
+1. 静态代理
+2. 动态代理
+
+### 静态代理
+
+优点:
++ 可以使真实角色(房东)操作更加纯粹(代码干净整洁)，不用去关注公共业务(不用管如何匹配客户，看房等杂活)
++ 公共业务交给代理角色实现，实现业务分工，代码抽象复用
++ 公共业务发生扩展时候，方便集中管理
+
+缺点:
++ 一个真实角色需要一个代理角色，多个真实角色会让代码量翻倍(仅静态代理中会出现，动态代理得以解决)
+
+接口:
+```java
+// 租房
+public interface Rent {
+    // 出租
+    public void rent();
+}
+```
+真实角色:
+```java
+// 房东
+public class Landlord implements Rent{
+    @Override
+    public void rent() {
+        // 出租房产
+        System.out.println("Rent out properties");
+    }
+}
+```
+代理角色:
+```java
+// 代理 or 中介
+public class Proxy implements Rent{
+    // 使用组合方式 先获得房东信息
+    private Landlord landlord;
+    // 中介推荐房源
+    public Proxy() {
+        this.landlord = new Landlord();
+    }
+    // 看指定房源
+    public Proxy(Landlord landlord) {
+        this.landlord = landlord;
+    }
+
+    @Override
+    public void rent() {
+        guide();
+        landlord.rent();
+        sign();
+        charge();
+    }
+    public void guide(){
+        System.out.println("Guided tour of house");
+    }
+    public void charge(){
+        // 收中介费
+        System.out.println("Collect intermediary fees");
+    }
+    public void sign(){
+        // 签合同
+        System.out.println("Sign a contract");
+    }
+}
+```
+客户访问:
+```java
+// 客户
+public class Client {
+    // 租一间房子
+    public static void main(String[] args) {
+        // Landlord landlord = new Landlord();
+        // landlord.rent();
+        // Proxy proxy = new Proxy(new Landlord());
+        Proxy proxy = new Proxy();
+        proxy.rent();
+    }
+}
+```
+
+### 动态代理
+
+动态代理和静态代理的角色一样。
+
+动态代理的代理类是动态生成的。
+
+动态代理分两类: 基于接口的动态代理、基于类的动态代理
+
++ 基于接口: JDK动态代理(demo03, demo04)
++ 基于类: CGLIB
++ Java字节码实现: Javassist
+
+需要了解两个类 proxy 代理、 InvocationHandler 调用处理程序
+
+动态代理好处:
++ 一个动态代理类代理的是一个接口，一般对应了一类业务
++ 一个动态代理类可以代理多个类，只要是实现的同一个接口
++ 具有静态代理所有优点
+
+## AOP(Aspect Oriented Programming)
+
+面向切面编程。如上动态代理和静态代理的流程，可以理解拓展原先业务的一种方式。这种方法是Spring的重要内容。
+
+AOP核心是代理模式，IoC核心是工厂模式。
+
+### Spring中的AOP
+
+提供声明式事务，允许用户自定义切面。
+
+#### 方式一：使用Spring原生API
+
+```java
+public class Log implements MethodBeforeAdvice {
+    /**
+     * Callback before a given method is invoked.
+     * @param method the method being invoked
+     * @param args the arguments to the method
+     * @param target the target of the method invocation. May be {@code null}.
+     * @throws Throwable if this object wishes to abort the call.
+     * Any exception thrown will be returned to the caller if it's
+     * allowed by the method signature. Otherwise the exception
+     * will be wrapped as a runtime exception.
+     */
+    @Override
+    public void before(Method method, Object[] args, Object target) throws Throwable {
+        System.out.println("Class: " +
+                target.getClass().getName() +
+                "." +
+                method.getName() +
+                " in " +
+                new Date());
+    }
+}
+```
+
+编写类继承MethodBeforeAdvice接口，实现before方法。
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="userService" class="com.iris.service.UserServiceImpl"/>
+    <bean id="afterLog" class="com.iris.log.AfterLog"/>
+    <bean id="log" class="com.iris.log.Log"/>
+
+    <!-- 方式一：使用Spring原生api -->
+    <!-- 切面需要配置 -->
+    <aop:config>
+        <!-- 需要切入点 expression 表达式-->
+        <aop:pointcut id="pointcut" expression="execution(* com.iris.service.UserServiceImpl.*(..))"/>
+        <!-- 执行环绕增加 -->
+        <aop:advisor advice-ref="log" pointcut-ref="pointcut"/>
+        <aop:advisor advice-ref="afterLog" pointcut-ref="pointcut"/>
+    </aop:config>
+
+</beans>
+```
+
+xml中添加约束 `xmlns:aop="http://www.springframework.org/schema/aop"`
+
+配置AOP `<aop:config>`
+
+设置切入点，切入点上绑定环绕。
+
+java中@param 的注释最好添加，由于spring代码不够完整，不添加注释可能会在xml中报错。
+
+#### 方法二：使用自定义类实现
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="userService" class="com.iris.service.UserServiceImpl"/>
+    <bean id="diyPointCut" class="com.iris.diypointcut.DiyPointCut"/>
+
+    <!-- 方式二：自定义类 -->
+    <!-- 切面需要配置 -->
+    <aop:config>
+        <!-- 自定义切入面 -->
+        <aop:aspect ref="diyPointCut">
+            <!-- 定义切入点 -->
+            <aop:pointcut id="point" expression="execution(* com.iris.service.UserServiceImpl.*(..))"/>
+            <!-- 通知：绑定方法 -->
+            <aop:before method="before" pointcut-ref="point"/>
+            <aop:after method="after" pointcut-ref="point"/>
+        </aop:aspect>
+    </aop:config>
+
+</beans>
+```
+
+任何类都可以在xml中定义为切片，被放置到切入点前后执行。
+
+#### 方式三：注解方式
+
+```java
+package com.iris.diypointcut;
+
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+
+@Aspect // 标记为切面
+public class AnnotationPointCut {
+    @Before("execution(* com.iris.service.UserServiceImpl.*(..))")
+    public void before() {
+        System.out.println("before");
+    }
+
+    @After("execution(* com.iris.service.UserServiceImpl.*(..))")
+    public void after() {
+        System.out.println("after");
+    }
+
+}
+```
+
+java类中添加注解
+
+pom.xml中将作用域注释掉`<!-- <scope>runtime</scope> -->`
+
+```xml
+    <!-- 开启注解支持 -->
+    <aop:aspectj-autoproxy/>
+```
+
+xml中开启注解支持。
+

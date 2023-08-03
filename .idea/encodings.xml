@@ -3,8 +3,8 @@
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$/.idea/.gitignore" charset="GBK" />
     <file url="file://$PROJECT_DIR$/Readme.md" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/annotation/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/annotation/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/annotation-based/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/annotation-based/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/autowired/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/autowired/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/dependency-injection/src/main/java" charset="UTF-8" />
@@ -12,6 +12,12 @@
     <file url="file://$PROJECT_DIR$/hello-spring/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/hello-spring/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/hello-spring/src/test/java/MyTest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/java-based/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/java-based/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/proxy-pattern/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/proxy-pattern/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-aop/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-aop/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spring-ioc/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spring-ioc/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spring-ioc/src/test/java/MyTest.java" charset="UTF-8" />
