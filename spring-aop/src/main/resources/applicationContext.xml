@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="userService" class="com.iris.service.UserServiceImpl"/>
+    <bean id="afterLog" class="com.iris.log.AfterLog"/>
+    <bean id="log" class="com.iris.log.Log"/>
+
+    <!-- 方式一：使用Spring原生api -->
+    <!-- 切面需要配置 -->
+    <aop:config>
+        <!-- 需要切入点 expression 表达式-->
+        <aop:pointcut id="pointcut" expression="execution(* com.iris.service.UserServiceImpl.*(..))"/>
+        <!-- 执行环绕增加 -->
+        <aop:advisor advice-ref="log" pointcut-ref="pointcut"/>
+        <aop:advisor advice-ref="afterLog" pointcut-ref="pointcut"/>
+    </aop:config>
+
+</beans>
