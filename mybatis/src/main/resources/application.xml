@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="spring-dao.xml"/>
+
+    <bean id="userMapperImpl" class="com.iris.mapper.UserMapperImpl">
+        <property name="sqlSession" ref="sqlSessionTemplate"/>
+    </bean>
+    <bean id="userDaoImpl" class="com.iris.mapper.UserDaoImpl">
+        <!-- 可以注入factory，也可也注入template。官方建议factory -->
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <!-- <property name="sqlSessionTemplate" ref="sqlSessionTemplate"/> -->
+    </bean>
+</beans>

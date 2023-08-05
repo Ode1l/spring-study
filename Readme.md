@@ -242,10 +242,13 @@ java自带了@Resource标签，作用与Autowired相同
 
 ### @Component衍生注解
 
-dao --@Repository
-service --@Service
-controller --@Controller
-po --@Component
+dao --> @Repository
+
+service --> @Service
+
+controller --> @Controller
+
+po --> @Component
 
 MVC不同层级对应不同注解，但是实质上都是@Component衍生出来的。
 
@@ -273,7 +276,7 @@ public class SpringConfig {
 }
 ```
 
-类用@Configuration标记为SpringConfig。类中通过@Bean return new User();该方法触发，效果等同于在XML中注册。
+类用@Configuration标记为SpringConfig。类中通过例子中`@Bean`标记的方法该方法触发，效果等同于在XML中注册。
 
 同时也可以使用@ComponentScan("com.iris")包扫描器，记得在在需要注册的类上@Component注册。
 
@@ -407,6 +410,8 @@ AOP核心是代理模式，IoC核心是工厂模式。
 
 提供声明式事务，允许用户自定义切面。
 
+需要导入包aspectjweaver
+
 #### 方式一：使用Spring原生API
 
 ```java
@@ -537,3 +542,97 @@ pom.xml中将作用域注释掉`<!-- <scope>runtime</scope> -->`
 
 xml中开启注解支持。
 
+## 结合 Mybatis
+
+### 方式一
+
+需要导入mybatis-spring, mybatis, spring-jdbc
+
+1. mybatis-config.xml中数据库配置部分由spring-jdbc接管
+
+```xml
+<!-- DataSource: 使用Spring数据源替换Mybatis配置 c3p0 dbcp druid -->
+<!-- 这里使用Spring提供的JDBC -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/mybatis
+                ?useSSL=true&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;
+                allowMultiQueries=true&amp;useAffectedRows=true&amp;
+                serverTimezone=Asia/Shanghai"/>
+        <property name="username" value="root"/>
+        <property name="password" value="112358"/>
+    </bean>
+```
+
+2. SqlSessionFactory和mybatis-config中mapper部分，以及其余配置部分由SqlSessionFactoryBean接管
+
+```xml
+<!-- SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <!-- 绑定Mybatis配置文件,可以不用 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!-- 可用*占位符一次引用一个包 -->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+```
+
+代替代码:
+```java
+    String resources = "mybatis-config.xml";
+    InputStream in = Resources.getResourceAsStream(resources);
+    SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(in);
+```
+
+3. SqlSession 由 SqlSessionTemplate 来创建，创建时参数只能使用构造器方式。
+```xml
+<!-- SqlSessionTemplate是SqlSession,只能使用构造器注入！！！因为没有set方法-->
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+```
+
+代替代码:
+```java
+    SqlSession sqlSession = sqlSessionFactory.openSession(true);
+```
+
+4. 给接口写实现类（实体类），主要提供是提供set方法用来autowired。
+
+```java
+package com.iris.mapper;
+
+import com.iris.po.User;
+import org.mybatis.spring.SqlSessionTemplate;
+
+import java.util.List;
+
+public class UserMapperImpl implements UserMapper {
+    private SqlSessionTemplate sqlSession;
+    
+    // set方法提供注入接口
+    public void setSqlSession(SqlSessionTemplate sqlSession) {
+        this.sqlSession = sqlSession;
+    }
+
+    @Override
+    public List<User> query() {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        return userMapper.query();
+    }
+}
+```
+
+5. 注入实现类并调用
+```xml
+    <bean id="userMapperImpl" class="com.iris.mapper.UserMapperImpl">
+        <property name="sqlSession" ref="sqlSessionTemplate"/>
+    </bean>
+```
+```java
+        UserMapperImpl userMapper = context.getBean(UserMapperImpl.class);
+        List<User> userList = userMapper.query();
+        userMapper.query().forEach(System.out::println);
+```
+
+### 方式二
