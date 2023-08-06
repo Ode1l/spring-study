@@ -724,3 +724,7 @@ springbean中需要绑定factory或者template都可以。
 ```
 
 在配置文件中添加transactionManager。给方法绑定事务。配置切入点。
+
+案例中，我在UserServiceImpl中写的invoke方法内，先增加一个用户，再删除一个用户，删除的sql做了手脚无法执行。因此会执行报错。开启事务后，执行错误了依然会回滚，数据库中没有测试的用户。
+
+mybatis-spring官方文档使用的案例是将transactionManager绑定到了factory上，这种案例没有实际意义，最有实际意义的是这种声明式的绑定方式，会使原先代码没有任何改动。
