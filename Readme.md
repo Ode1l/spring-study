@@ -636,3 +636,91 @@ public class UserMapperImpl implements UserMapper {
 ```
 
 ### 方式二
+
+```java
+package com.iris.mapper;
+
+import com.iris.po.User;
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+
+import java.util.List;
+
+public class UserDaoImpl extends SqlSessionDaoSupport implements UserMapper  {
+    @Override
+    public List<User> query() {
+        return getSqlSession().getMapper(UserMapper.class).query();
+    }
+}
+```
+
+只需在实现类中继承`SqlSessionDaoSupport`类，方法中使用`getSqlSession().getMapper(UserMapper.class)`反射来获取。
+
+```xml
+    <bean id="userDaoImpl" class="com.iris.mapper.UserDaoImpl">
+        <!-- 可以注入factory，也可也注入template。官方建议factory -->
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <!-- <property name="sqlSessionTemplate" ref="sqlSessionTemplate"/> -->
+    </bean>
+```
+
+springbean中需要绑定factory或者template都可以。
+
+## 事务(transaction)管理
+
+1. 声明式事务
+2. 编程式事务
+
+#### 编程式
+
+在需要事务管理的代码段使用`try` `catch` 管理
+
+```java
+@Override
+    public void invoke() {
+        TransactionStatus txStatus =
+                transactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            User user = new User(3,"橙猫猫","156");
+            userMapper.add(user);
+            userMapper.delete(3);
+        } catch (Exception e) {
+            transactionManager.rollback(txStatus);
+            throw e;
+        }
+        transactionManager.commit(txStatus);
+    }
+```
+
+### 声明式(推荐)
+
+```xml
+    <!-- 配置声明式事务 DataSourceTransactionManager  -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 可以使用属性方式，官方使用构造器方式 -->
+        <!-- <property name="dataSource" ref="dataSource"/> -->
+        <!-- 构造器方式同理 -->
+        <constructor-arg ref="dataSource" />
+    </bean>
+
+    <!-- 结合AOP，实现事务植入 -->
+    <!-- 配置事务通知 -->
+    <tx:advice id="transactionInterceptor" transaction-manager="transactionManager">
+        <!-- 给哪些方法配置事务 -->
+        <!-- 配置事务的传播特性 propagation 默认 REQUIRED -->
+        <tx:attributes>
+            <!-- <tx:method name="add" propagation="REQUIRED"/> -->
+            <!-- <tx:method name="update" propagation="REQUIRED"/> -->
+            <!-- <tx:method name="delete" propagation="REQUIRED"/> -->
+            <!-- <tx:method name="query" read-only="true"/> -->
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 配置事务切入点 -->
+    <aop:config>
+        <aop:pointcut id="txPointCut" expression="execution(* com.iris.service.*.*(..))"/>
+        <aop:advisor advice-ref="transactionInterceptor" pointcut-ref="txPointCut"/>
+    </aop:config>
+```
+
+在配置文件中添加transactionManager。给方法绑定事务。配置切入点。

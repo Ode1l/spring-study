@@ -18,6 +18,7 @@
         <module>proxy-pattern</module>
         <module>spring-aop</module>
         <module>mybatis</module>
+        <module>transaction</module>
     </modules>
 
     <properties>
