@@ -212,11 +212,11 @@ The introduction of annotation-based configuration raised the question of whethe
 
 #### @AutoWired
 
-直接在属性上使用，也可以在set方法上使用。使用AutoWired后，可以省略set方法。注解其实是使用反射实现byname方法
+直接在属性上使用，也可以在set方法上使用。使用AutoWired后，可以省略set方法。注解其实是使用反射实现byName方法
 
 @AutoWired(required = false) 使用required = false可使属性对象为空值且不报错。
 
-@Qualifier(value = "dog11") 如果出现名称重复情况，可使用此标签重新byname定位。
+@Qualifier(value = "dog11") 如果出现名称重复情况，可使用此标签重新byName定位。
 
 set方法中的字段可以使用@Nullable注解，使方法值可以为null。不会报错。
 public void setCat(@Nullable Cat cat)
@@ -226,9 +226,103 @@ public void setCat(@Nullable Cat cat)
 java自带了@Resource标签，作用与Autowired相同
 @Resource(name = "dog")
 
-#### 区别
+### Field injection is not recommended
+ 
+字段注入不被推荐。为什么不推荐？
+ 
+1. NPE问题:
 
-1. Autowired 默认byType。 resource默认byName，找不到通过byType，如果还找不到，报错。
+使用字段注入容易出现空指针问题，如下代码所示：因为Spring IOC容器在使用字段依赖注入时，并不会对依赖的bean是否为null做判断，因此在下面的代码中，通过 @Autowired 注入的user对象可能为空，而JVM 虚拟机在编译时也无法检测出user为null，只有在运行时调用user的方法时， 发现user为null，出现空指针异常(NPE)。
+
+```java
+    @Component
+    public class FieldBasedInjection {
+        private String name;
+        
+        @Autowired
+        private final User user;
+        public FieldBasedInjection(){
+            this.name = user.getName(); // NPE
+        }
+    }
+```
+Java 在初始化一个类时，是按照 静态变量或静态语句块 ->实例变量或初始化语句块 -> 构造方法 -> @Autowired的顺序。所以在执行这个类的构造方法时，对象实际尚未被注入，它的值还是 null, 如果属性在被注入前就拿来使用就会导致npe(空指针错误)。
+
+2. 和IOC容器耦合度太高
+
+类通过属性输入，对外部不可见，类和容器的耦合度过高，导致无法脱离容器单独正确运行。比如下面的例子在Spring容器中运行没有问题。
+
+```java
+@RestController
+public class TestHandleController {
+    @Autowired
+    TestHandleService testHandleService;
+    public void helloTestService(){
+        testHandleService.hello();
+    }
+}
+```
+
+如果我们用下面的方式调用呢？
+
+```java
+        TestHandleController testHandle = new TestHandleController();
+        testHandle.helloTestService();  // 空指针
+```
+
+显而易见，就会出现空指针异常，依赖对外部不可见，外界可以看到构造器和setter，但无法看到私有字段，自然无法了解所需依赖，这样十分不利于单元测试。
+
+3. 可能导致违反单一职责原则
+
+使用基于字段的注解，非常简单好用无脑，我们无需关注类之间的依赖关系，完全依赖于Spring IOC容器的管理，但是使用”基于构造器注入的方式”， 我们需要手动在类代码中去编写需要依赖的类，当依赖的类越来越多，我们就能发现 code smell，这个时候就能显示的提醒我们，代码的质量是否有问题。因此，尽管字段注入不直接负责打破单一责任原则，但它通过隐藏了和构造器注入一样发现code smell的机会。示例代码：
+
+```java
+@Component 
+public class ConstructorBasedInjection {
+    private final Object object; 
+    private final Object object2;         
+    //         ... 
+    private final Object objectX;
+    
+    @Autowired 
+    public ConstructorBasedInjection(Object object, 
+                                     Object object2, 
+                                     //  ...       ,
+                                     Object objectX) {
+        this.object = object;
+        this.object2 = object2; 
+        //      ...     
+        this.objectX = objectX; 
+        }
+}
+```
+
+4. 和Spring框架高度耦合
+
+@Autowired是Spring框架中的注解，如果你的应用程序想要更换一个IOC框架，虽然这种情况非常非常低，这时候你就需要修改大量的代码了。更推荐的是使用 @Resource注解，@Resource注解是JSR-250提供的，它是Java标准，我们使用的IOC容器应当去兼容它，这样即使更换容器，也可以正常工作。
+
+### *Recommended method
+
+1. 【强烈推荐】使用构造器方式注入
+
+    这也是Spring官方强烈推荐使用基于构造器注入的方式, 像国内Dubbo、RocketMQ等很多开源框架的源码都已经转向了基于构造器的注入方式，所以开发中我们应该尊重Spring官方的推荐，尽管其他的方式可以解决，但是不推荐。
+
+2. 【一般推荐】使用@Resource注解
+
+    如果你不喜欢构造器注入的方式，觉得使用构造器注入的方式麻烦，还要写代码，虽然不建议你这么想。那么更推荐你使用@Resource注解，@Resource是JSR-250提供的，不是Spring中的注解，它是Java标准，我们使用的IoC容器应当去兼容它，这样即使更换容器，也可以正常工作。如果你使用这个注解IDEA也不会提示警告。
+
+#### @Autowired VS @Resource。
+1. 提供方:
+   - @Autowired是由Spring提供的，包名是: org.springframework.beans.factory.annotation
+   - @Resource 是由Java提供的，包名是：javax.annotation
+2. 依赖识别方式
+   - @Autowired默认是以byType方式，可以使用@Qualifier指定bean名称，如果找不到Bean不会自动使用byName方式。
+   - @Resource 默认是以byName方式，当byName方式无法匹配时，会使用byType方式。（仅适用于仅注册了一个Bean对象的类型）
+3. 适用对象
+   - @Autowired 可以使用在方法，方法参数，构造器，构造器参数，字段上
+   -@Resource只能使用在方法，字段上(经过实测，无法注解在构造器和参数上)
+4. 强依赖型
+   - @Autowired和@Resource都是具有强依赖性，也就是必须要有这个bean才能启动，不过@Autowired可以设置属性required=false变成非强制注入。
 
 ## 注解完成所有功能
 
